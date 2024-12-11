@@ -12,6 +12,9 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: some-group-name
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,6 +31,12 @@ jobs:
           python-version: "3.13"
       - name: Install Poetry Action
         uses: snok/install-poetry@v1.3.4
+      - name: Cache build venv
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/work/iac-labs/example-app/.venv
+          key: ${{ runner.os }}-venv
       - name: Install dependencies
         run: |
           poetry install --no-root
@@ -41,15 +50,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Download dependencies
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/work/iac-labs/example-app/.venv
+          key: ${{ runner.os }}-venv
       - name: Set up Python 3.13
         uses: actions/setup-python@v3
         with:
           python-version: "3.13"
       - name: Install Poetry Action
         uses: snok/install-poetry@v1.3.4
-      - name: Install dependencies
-        run: |
-          poetry install --no-root
       - name: Lint with poetry
         run: |
           poetry run task lint
@@ -63,15 +74,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Download dependencies
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/work/iac-labs/example-app/.venv
+          key: ${{ runner.os }}-venv
       - name: Set up Python 3.13
         uses: actions/setup-python@v3
         with:
           python-version: "3.13"
       - name: Install Poetry Action
         uses: snok/install-poetry@v1.3.4
-      - name: Install dependencies
-        run: |
-          poetry install --no-root
       - name: Format with poetry
         run: |
           poetry run task formatter
@@ -85,15 +98,17 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+      - name: Download dependencies
+        uses: actions/cache@v3
+        with:
+          path: /home/runner/work/iac-labs/example-app/.venv
+          key: ${{ runner.os }}-venv
       - name: Set up Python 3.13
         uses: actions/setup-python@v3
         with:
           python-version: "3.13"
       - name: Install Poetry Action
         uses: snok/install-poetry@v1.3.4
-      - name: Install dependencies
-        run: |
-          poetry install --no-root
       - name: Security with poetry
         run: |
           poetry run task security
